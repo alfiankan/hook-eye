@@ -1,0 +1,7 @@
+# make payment
+curl --request POST --data '{"reference_id":"FA5452022", "total":545000}' http://localhost:8080/payment
+
+
+# re invoke webhook
+
+
