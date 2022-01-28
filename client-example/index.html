@@ -1,0 +1,75 @@
+<h1>PAYMENT</h1>
+
+<div id="notif-space"></div>
+<input type="text" placeholder="Reference ID" id="reference_id" />
+<input type="number" placeholder="Total Money" id="total_money" />
+<button onclick="pay();">Pay</button>
+
+
+<script>
+
+    function startWS(id) {
+
+        let socket = new WebSocket(`ws://localhost:3000/notification/${id}`);
+
+        socket.onopen = function(e) {
+            console.log("[open] Connection established");
+        };
+
+        socket.onmessage = function(event) {
+            console.log(event.data)
+        };
+
+        socket.onclose = function(event) {
+        if (event.wasClean) {
+            console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+        } else {
+            console.log('[close] Connection died');
+        }
+        };
+
+        socket.onerror = function(error) {
+            console.log(`[error] ${error.message}`);
+        };
+        
+    }
+
+    function showNotification() {
+        document.getElementById('notif-space').innerHTML = '<h5 style="background-color: green;color: white;">Payment Success</h5>'
+        setTimeout(() => {
+            document.getElementById('notif-space').innerHTML = ''
+        }, 5000);
+
+    }
+
+    showNotification()
+
+    function pay() {
+        let id = document.getElementById('reference_id').value
+        let total = document.getElementById('total_money').value
+        console.log(id)
+        console.log(total)
+        startWS(id)
+
+        fetch("http://localhost:8080/payment",
+        {
+            method: "POST",
+            body: JSON.stringify({
+                reference_id: id,
+                total: total
+            })
+        })
+        .then(function(res){ 
+            console.log(res.json()) 
+
+        })
+        .then(function(data){ 
+            console.log( JSON.stringify( data ) ) 
+        })
+
+    }
+
+
+  
+
+</script>
